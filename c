@@ -101,6 +101,8 @@ function rebuild($args) {
                 $configureFlags[] = '--with-gmp';
                 $configureFlags[] = '--with-mysqli=mysqlnd';
                 $configureFlags[] = '--with-openssl';
+                break;
+            case 'valgrind':
                 $configureFlags[] = '--with-valgrind';
                 break;
             default:
