@@ -79,7 +79,10 @@ function build() {
 }
 
 function rebuild($args) {
-    $configureFlags = ['--disable-phpdbg'];
+    $configureFlags = [
+        '--with-config-file-path=' . realpath($_SERVER['HOME'] . '/.local/lib'),
+        '--disable-phpdbg',
+    ];
     $envVars = [];
     $debug = true;
     $asan = false;
