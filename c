@@ -146,7 +146,7 @@ function rebuild($args) {
 }
 
 function test($args) {
-    $testArgs = ['-j' . CORES, '-x', '-q', '-g FAIL,BORK', '--asan'];
+    $testArgs = ['-j' . CORES, '-x', '-q', '-g FAIL,BORK', '--asan', '--show-diff'];
 
     foreach ($args as $arg) {
         switch ($arg) {
