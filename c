@@ -163,7 +163,8 @@ function test($args) {
     runCommand(['make', '-j' . CORES]);
     runCommand(
         ['make', 'test', 'TESTS=' . implode(' ' , $testArgs)],
-        envVars: ['SKIP_IO_CAPTURE_TESTS' => '1'],
+        /* NixOS sets the PHP_INI_SCAN_DIR env variable, but we don't want it here. */
+        envVars: ['SKIP_IO_CAPTURE_TESTS' => '1', 'PHP_INI_SCAN_DIR' => ''],
         hideStdout: false);
 }
 
