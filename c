@@ -147,17 +147,24 @@ function rebuild($args) {
 
 function test($args) {
     $testArgs = ['-j' . CORES, '-x', '-q', '-g FAIL,BORK', '--asan', '--show-diff'];
+    $failed = false;
 
     foreach ($args as $arg) {
         switch ($arg) {
             case 'opcache':
                 $testArgs[] = '-d opcache.enable_cli=1';
                 break;
+            case 'failed':
+                $failed = true;
+                break;
             default:
                 $testArgs[] = $arg;
                 break;
         }
     }
+
+    $testArgs[] = $failed ? '-l' : '-w';
+    $testArgs[] = ROOT . '/failed.txt';
 
     /* Compile separately to avoid excessive output. */
     runCommand(['make', '-j' . CORES]);
