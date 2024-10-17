@@ -183,6 +183,39 @@ function test($args) {
         hideStdout: false);
 }
 
+function create_test($args) {
+    $name = $args[0] ?? null;
+    if (!$name) {
+        fprintf(STDOUT, "Missing test name\n");
+        exit(1);
+    }
+
+    if (strpos($name, '/') === false) {
+        $name = 'Zend/tests/' . $name;
+    }
+    if (strpos($name, '.') === false) {
+        $name .= '.phpt';
+    }
+
+    $file = ROOT . '/' . $name;
+    if (file_exists($file)) {
+        fprintf(STDOUT, "File exists\n");
+        exit(1);
+    }
+
+    file_put_contents(ROOT . '/' . $name, <<<PHP
+    --TEST--
+    Test
+    --FILE--
+    <?php
+
+
+
+    ?>
+    --EXPECT--
+    PHP);
+}
+
 $command = $argv[1] ?? null;
 
 if ($command === null) {
@@ -191,6 +224,8 @@ if ($command === null) {
     rebuild(array_slice($argv, 2));
 } else if ($command === 'test') {
     test(array_slice($argv, 2));
+} else if ($command === 'create-test') {
+    create_test(array_slice($argv, 2));
 } else {
     fprintf(STDERR, "Unknown command '$command'\n");
     exit(1);
