@@ -86,6 +86,7 @@ function rebuild($args) {
     $envVars = [];
     $debug = true;
     $asan = false;
+    $ubsan = false;
 
     foreach ($args as $arg) {
         switch ($arg) {
@@ -94,6 +95,9 @@ function rebuild($args) {
                 break;
             case 'asan':
                 $asan = true;
+                break;
+            case 'ubsan':
+                $ubsan = true;
                 break;
             case 'bench':
                 $configureFlags[] = '--enable-mbstring';
@@ -136,6 +140,10 @@ function rebuild($args) {
     if ($asan) {
         $configureFlags[] = '--enable-address-sanitizer';
         $configureFlags[] = '--enable-undefined-sanitizer';
+    }
+    if ($ubsan) {
+        $configureFlags[] = '--enable-undefined-sanitizer';
+        $configureFlags[] = '--without-pcre-jit';
     }
     if (file_exists(ROOT . '/Makefile')) {
         runCommand(['make', 'distclean']);
