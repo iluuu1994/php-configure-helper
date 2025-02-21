@@ -82,14 +82,20 @@ function rebuild($args) {
     $configureFlags = [
         '--with-config-file-path=' . realpath($_SERVER['HOME'] . '/.local/lib'),
         '--disable-phpdbg',
+        '--enable-opcache',
+        '--with-capstone',
     ];
     $envVars = [];
+    $defaultExts = false;
     $debug = true;
     $asan = false;
     $ubsan = false;
 
     foreach ($args as $arg) {
         switch ($arg) {
+            case 'default-exts':
+                $defaultExts = true;
+                break;
             case 'release':
                 $debug = false;
                 break;
@@ -126,6 +132,9 @@ function rebuild($args) {
         $envVars['CFLAGS'] .= ' -ggdb3';
     } else {
         $envVars['CFLAGS'] = '-ggdb3';
+    }
+    if (!$defaultExts) {
+        array_unshift($configureFlags, '--disable-all');
     }
     if ($debug) {
         $configureFlags[] = '--enable-debug';
