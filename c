@@ -112,6 +112,9 @@ function rebuild($args) {
                 $configureFlags[] = '--with-mysqli=mysqlnd';
                 $configureFlags[] = '--with-openssl';
                 break;
+            case 'laravel':
+                $configureFlags[] = '--with-pdo-mysql';
+                break;
             case 'valgrind':
                 $configureFlags[] = '--with-valgrind';
                 break;
