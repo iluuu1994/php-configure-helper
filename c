@@ -89,7 +89,7 @@ function rebuild($args) {
     $defaultExts = false;
     $debug = true;
     $asan = false;
-    $ubsan = false;
+    $msan = false;
 
     foreach ($args as $arg) {
         switch ($arg) {
@@ -102,8 +102,8 @@ function rebuild($args) {
             case 'asan':
                 $asan = true;
                 break;
-            case 'ubsan':
-                $ubsan = true;
+            case 'msan':
+                $msan = true;
                 break;
             case 'bench':
                 $configureFlags[] = '--enable-mbstring';
@@ -128,6 +128,9 @@ function rebuild($args) {
         }
     }
 
+    if (!isset($envVars['CC'])) {
+        $envVars['CC'] = 'ccache gcc';
+    }
     if (isset($envVars['CFLAGS'])) {
         $envVars['CFLAGS'] .= ' -ggdb3';
     } else {
@@ -150,9 +153,10 @@ function rebuild($args) {
         $configureFlags[] = '--enable-address-sanitizer';
         $configureFlags[] = '--enable-undefined-sanitizer';
     }
-    if ($ubsan) {
-        $configureFlags[] = '--enable-undefined-sanitizer';
+    if ($msan) {
+        $configureFlags[] = '--enable-memory-sanitizer';
         $configureFlags[] = '--without-pcre-jit';
+        $envVars['CC'] = 'ccache clang';
     }
     if (file_exists(ROOT . '/Makefile')) {
         runCommand(['make', 'distclean']);
