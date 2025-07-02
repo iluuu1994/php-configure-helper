@@ -80,7 +80,7 @@ function build() {
 
 function rebuild($args) {
     $configureFlags = [
-        '--with-config-file-path=' . realpath($_SERVER['HOME'] . '/.local/lib'),
+        '--with-config-file-path=' . ROOT . '/.local',
         '--disable-phpdbg',
         '--enable-opcache',
         '--with-capstone',
