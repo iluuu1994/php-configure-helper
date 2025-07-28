@@ -8,7 +8,7 @@ if (getcwd() !== ROOT) {
     exit(1);
 }
 
-const CORES = 16;
+define('CORES', (int)exec('nproc') - 4);
 
 function get_php_version(): string {
     $phpVersionFile = ROOT . '/main/php_version.h';
