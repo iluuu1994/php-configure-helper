@@ -10,6 +10,18 @@ if (getcwd() !== ROOT) {
 
 const CORES = 16;
 
+function get_php_version(): string {
+    $phpVersionFile = ROOT . '/main/php_version.h';
+    $phpVersionContents = file_get_contents($phpVersionFile);
+    $result = preg_match('(#define PHP_MAJOR_VERSION (?<version>\d+))', $phpVersionContents, $matches);
+    assert($result === 1);
+    $major = $matches['version'];
+    $result = preg_match('(#define PHP_MINOR_VERSION (?<version>\d+))', $phpVersionContents, $matches);
+    assert($result === 1);
+    $minor = $matches['version'];
+    return "$major.$minor";
+}
+
 function runCommand(array $args, ?array $envVars = null, bool $hideStdout = true) {
     $cmd = '';
     if ($envVars === []) {
@@ -79,12 +91,16 @@ function build() {
 }
 
 function rebuild($args) {
+    $version = get_php_version();
+
     $configureFlags = [
         '--with-config-file-path=' . ROOT . '/.local',
         '--disable-phpdbg',
-        '--enable-opcache',
         '--with-capstone',
     ];
+    if (version_compare($version, '8.5', '<')) {
+        $configureFlags[] = '--enable-opcache';
+    }
     $envVars = [];
     $defaultExts = false;
     $debug = true;
