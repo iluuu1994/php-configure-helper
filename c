@@ -177,11 +177,18 @@ function rebuild($args) {
         $configureFlags[] = '--without-pcre-jit';
         $envVars['CC'] = 'ccache clang';
     }
+    if (file_exists(ROOT . '/config.cache')) {
+        copy(ROOT . '/config.cache', ROOT . '/config.cache.bak');
+    }
     if (file_exists(ROOT . '/Makefile')) {
         runCommand(['make', 'distclean']);
     }
     runCommand(['./buildconf', '--force']);
-    runCommand(['./configure', ...$configureFlags], envVars: $envVars);
+    if (file_exists(ROOT . '/config.cache.bak')) {
+        copy(ROOT . '/config.cache.bak', ROOT . '/config.cache');
+    }
+    @unlink(ROOT . '/config.cache.bak');
+    runCommand(['./configure', '--config-cache', ...$configureFlags], envVars: $envVars);
     runCommand(['compiledb', 'make', '-j' . CORES]);
 }
 
