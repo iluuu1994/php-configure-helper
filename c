@@ -106,6 +106,7 @@ function rebuild($args) {
     $debug = true;
     $asan = false;
     $msan = false;
+    $fuzzer = false;
 
     foreach ($args as $arg) {
         switch ($arg) {
@@ -144,6 +145,9 @@ function rebuild($args) {
                     exit(1);
                 }
                 break;
+            case 'fuzzer':
+                $fuzzer = true;
+                break;
         }
     }
 
@@ -175,6 +179,11 @@ function rebuild($args) {
     if ($msan) {
         $configureFlags[] = '--enable-memory-sanitizer';
         $configureFlags[] = '--without-pcre-jit';
+        $envVars['CC'] = 'ccache clang';
+    }
+    if ($fuzzer) {
+        $configureFlags[] = '--enable-fuzzer';
+        $configureFlags[] = '--with-pic';
         $envVars['CC'] = 'ccache clang';
     }
     if (file_exists(ROOT . '/config.cache')) {
