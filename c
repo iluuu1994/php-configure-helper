@@ -22,7 +22,7 @@ function get_php_version(): string {
     return "$major.$minor";
 }
 
-function runCommand(array $args, ?array $envVars = null, bool $hideStdout = true) {
+function runCommand(array $args, ?array $envVars = null, bool $hideStdout = true, bool $exitOnFailure = true): bool {
     $cmd = '';
     if ($envVars === []) {
         $envVars = null;
@@ -81,9 +81,11 @@ function runCommand(array $args, ?array $envVars = null, bool $hideStdout = true
     fclose($stderr);
 
     $statusCode = proc_close($processHandle);
-    if ($statusCode !== 0) {
+    if ($statusCode !== 0 && $exitOnFailure) {
         exit($statusCode);
     }
+
+    return $statusCode === 0;
 }
 
 function build() {
@@ -197,7 +199,11 @@ function rebuild($args) {
         copy(ROOT . '/config.cache.bak', ROOT . '/config.cache');
     }
     @unlink(ROOT . '/config.cache.bak');
-    runCommand(['./configure', '--config-cache', ...$configureFlags], envVars: $envVars);
+    $result = runCommand(['./configure', '--config-cache', ...$configureFlags], envVars: $envVars, exitOnFailure: false);
+    if (!$result && file_exists(ROOT . '/config.cache')) {
+        unlink(ROOT . '/config.cache');
+        runCommand(['./configure', '--config-cache', ...$configureFlags], envVars: $envVars);
+    }
     runCommand(['compiledb', 'make', '-j' . CORES]);
 }
 
