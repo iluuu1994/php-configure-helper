@@ -97,7 +97,6 @@ function rebuild($args) {
 
     $configureFlags = [
         '--with-config-file-path=' . ROOT . '/.local',
-        '--disable-phpdbg',
         '--with-capstone',
     ];
     if (version_compare($version, '8.5', '<')) {
@@ -109,6 +108,7 @@ function rebuild($args) {
     $asan = false;
     $msan = false;
     $fuzzer = false;
+    $phpdbg = false;
 
     foreach ($args as $arg) {
         switch ($arg) {
@@ -137,6 +137,12 @@ function rebuild($args) {
             case 'valgrind':
                 $configureFlags[] = '--with-valgrind';
                 break;
+            case 'fuzzer':
+                $fuzzer = true;
+                break;
+            case 'phpdbg':
+                $phpdbg = true;
+                break;
             default:
                 if (str_starts_with($arg, '--')) {
                     $configureFlags[] = $arg;
@@ -146,9 +152,6 @@ function rebuild($args) {
                     fprintf(STDERR, "Unknown argument %s\n", $arg);
                     exit(1);
                 }
-                break;
-            case 'fuzzer':
-                $fuzzer = true;
                 break;
         }
     }
@@ -187,6 +190,9 @@ function rebuild($args) {
         $configureFlags[] = '--enable-fuzzer';
         $configureFlags[] = '--with-pic';
         $envVars['CC'] = 'ccache clang';
+    }
+    if (!$phpdbg) {
+        $configureFlags[] = '--disable-phpdbg';
     }
     if (file_exists(ROOT . '/config.cache')) {
         copy(ROOT . '/config.cache', ROOT . '/config.cache.bak');
