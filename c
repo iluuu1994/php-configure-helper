@@ -214,7 +214,8 @@ function rebuild($args) {
 }
 
 function test($args) {
-    $testArgs = ['-j' . CORES, '-x', '-q', '-g FAIL,BORK', '--asan', '--show-diff'];
+    $testArgs = ['-j' . CORES, '-x', '-q', '-g FAIL,BORK', '--show-diff'];
+    $asan = true;
     $failed = false;
 
     foreach ($args as $arg) {
@@ -225,10 +226,17 @@ function test($args) {
             case 'failed':
                 $failed = true;
                 break;
+            case 'zmm':
+                $asan = false;
+                break;
             default:
                 $testArgs[] = $arg;
                 break;
         }
+    }
+
+    if ($asan) {
+        $testArgs[] = '--asan';
     }
 
     $testArgs[] = $failed ? '-l' : '-w';
