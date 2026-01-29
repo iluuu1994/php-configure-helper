@@ -274,6 +274,8 @@ function create_test($args) {
     file_put_contents(ROOT . '/' . $name, <<<PHP
     --TEST--
     Test
+    --CREDITS--
+    Some Body <some.body@somewhere.com>
     --FILE--
     <?php
 
