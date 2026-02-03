@@ -275,7 +275,7 @@ function create_test($args) {
     --TEST--
     Test
     --CREDITS--
-    Some Body <some.body@somewhere.com>
+    Some Body (handle)
     --FILE--
     <?php
 
