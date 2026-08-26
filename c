@@ -96,9 +96,12 @@ function rebuild($args) {
     $version = get_php_version();
 
     $configureFlags = [
+        '--enable-option-checking=fatal',
         '--with-config-file-path=' . ROOT . '/.local',
-        '--with-capstone',
     ];
+    if (version_compare($version, '8.3', '>=')) {
+        $configureFlags[] = '--with-capstone';
+    }
     if (version_compare($version, '8.5', '<')) {
         $configureFlags[] = '--enable-opcache';
     }
