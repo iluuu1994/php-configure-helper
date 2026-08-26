@@ -112,6 +112,7 @@ function rebuild($args) {
     $msan = false;
     $fuzzer = false;
     $phpdbg = false;
+    $bolt = false;
 
     foreach ($args as $arg) {
         switch ($arg) {
@@ -145,6 +146,9 @@ function rebuild($args) {
                 break;
             case 'phpdbg':
                 $phpdbg = true;
+                break;
+            case 'bolt':
+                $bolt = true;
                 break;
             default:
                 if (str_starts_with($arg, '--')) {
@@ -196,6 +200,18 @@ function rebuild($args) {
     }
     if (!$phpdbg) {
         $configureFlags[] = '--disable-phpdbg';
+    }
+    if ($bolt) {
+        if (isset($envVars['CFLAGS'])) {
+            $envVars['CFLAGS'] .= ' -fno-pie';
+        } else {
+            $envVars['CFLAGS'] = '-fno-pie';
+        }
+        if (isset($envVars['LDFLAGS'])) {
+            $envVars['LDFLAGS'] .= ' -no-pie -Wl,--emit-relocs';
+        } else {
+            $envVars['LDFLAGS'] = '-no-pie -Wl,--emit-relocs';
+        }
     }
     if (file_exists(ROOT . '/config.cache')) {
         copy(ROOT . '/config.cache', ROOT . '/config.cache.bak');
